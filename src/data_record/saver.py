@@ -46,12 +46,12 @@ class JSONSaver(Saver):
         with open(JSON_PATH, 'w', encoding='utf-8') as file:
             json.dump(vacancy, file)
 
-    def get_vacancies_by_salary(self, salary: str) -> list[dict]:
+    def get_vacancies_by_salary(self, salary: int) -> list[dict]:
         vacancies = reading_file()
         if salary:
             vacancies_by_salary = []
             for vacancy in vacancies:
-                if int(vacancy['salary']) >= int(salary):
+                if int(vacancy['salary']) >= salary:
                     vacancies_by_salary.append(vacancy)
             return vacancies_by_salary
         return vacancies
