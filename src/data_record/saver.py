@@ -42,19 +42,18 @@ class Saver(ABC):
 class JSONSaver(Saver):
 
     def add_vacancy(self, vacancies: list) -> None:
-        vacancy = [vacancy.to_dict() for vacancy in vacancies]
+        vacancy = [vacansy.to_dict() for vacansy in vacancies]
         with open(JSON_PATH, 'w', encoding='utf-8') as file:
             json.dump(vacancy, file)
 
     def get_vacancies_by_salary(self, salary: int) -> list[dict]:
         vacancies = reading_file()
+        vacancies_by_salary = []
         if salary:
-            vacancies_by_salary = []
             for vacancy in vacancies:
-                if int(vacancy['salary']) >= salary:
-                    vacancies_by_salary.append(vacancy)
-            return vacancies_by_salary
-        return vacancies
+              pass
+                #return vacancies_by_salary
+        #return vacancies
 
     def delete_vacancy(self, vacancy: dict) -> None:
         with open(JSON_PATH, 'w', encoding='utf-8') as file:
@@ -64,3 +63,7 @@ class JSONSaver(Saver):
 def reading_file():
     with open(JSON_PATH, 'r', encoding='utf-8') as file:
         return json.load(file)
+
+def record_vacancy(vacancies: list) -> None:
+    with open(JSON_PATH, 'w', encoding='utf-8') as file:
+        json.dump(vacancies, file)

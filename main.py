@@ -1,10 +1,6 @@
-
 from src.data_processing.api import HeadHunterAPI, SuperJobAPI
-from src.data_record.saver import JSONSaver
-from src.data_vacancy.positions import Vacancy
-from src.utils import hh_inst, sj_inst, filter_vacancies, sort_vacancies, get_top_vacancies
-
-
+from src.data_record.saver import JSONSaver, reading_file
+from src.utils import hh_inst, sj_inst, sort_vacancies, get_top_vacancies, filter_vacancies
 
 
 def user_interaction():
@@ -12,44 +8,55 @@ def user_interaction():
     Функция для взаимодействия с пользователем
     :return: list
     """
-    platforms = ["HeadHunter", "SuperJob"]
-    search_query = input("Введите поисковый запрос: ")
-    platform = input(f"введите платформу"
-                     f"1 - {platforms[0]}"
-                     f"2 - {platforms[1]}"
-                     "или ENTER"
+    platforms = ["HeadHunter", "SuperJob"]                                                  # выбор платформы
+    search_query: str = input("Введите поисковый запрос: \n")
+    platform = input(f"введите платформу\n"
+                     f"1 - {platforms[0]}\n"
+                     f"2 - {platforms[1]}\n"
                      )
-    hh_vacancies = []                                                       #список ваканситй HH
-    superjob_vacancies = []                                                 #список вакансий SJ
-    if platform in platforms:                                               #обрабатываем platform
-        if platform == "1" or "":
-            hh_api = HeadHunterAPI()
-            hh_vacancies = hh_api.get_vacancies(search_query)
-        elif platform == "2" or "":
-            superjob_api = SuperJobAPI()
-            superjob_vacancies = superjob_api.get_vacancies(search_query)
-    hh_vacancies_inst = hh_inst(hh_vacancies)
-    sj_vacancies_inst = sj_inst(superjob_vacancies)
-    vacancies = hh_vacancies_inst + sj_vacancies_inst                       #объединяем списки HH+SJ
 
-    filter_words = input("Введите название вакансии для фильтрации: ").split()
+    hh_vacancies = []                                                                       # список ваканситй HH
+    superjob_vacancies = []                                                                 # список вакансий SJ
+    if platform == "1":
+        hh_api = HeadHunterAPI()
+        hh_vacancies.append(hh_api.get_vacancies(search_query))
+    elif platform == "2":
+        superjob_api = SuperJobAPI()
+        superjob_vacancies.append(superjob_api.get_vacancies(search_query))
+    else:
+        superjob_api = SuperJobAPI()
+        hh_api = HeadHunterAPI()
+        superjob_vacancies.append(superjob_api.get_vacancies(search_query))
+        hh_vacancies.append(hh_api.get_vacancies(search_query))
 
-    filtered_vacancies = filter_vacancies(vacancies, filter_words)          #фильтруем вакансии
+    hh_vacancies_inst = hh_inst(hh_vacancies)                                                # инициализированный список HH
+    sj_vacancies_inst = sj_inst(superjob_vacancies)                                          # # инициализированный список SJ
+    vacancies = [hh_vacancies_inst, sj_vacancies_inst]                                       # объединение списков
+
+    json_saver = JSONSaver()                                                                 # сохранение информации о вакансиях в файл
+    json_saver.add_vacancy(vacancies[1])
+
+    filter_words = input("Введите название вакансии для фильтрации: \n").split()             # фильтруем вакансии
+    filtered_vacancies = filter_vacancies(vacancies[1], filter_words)
+
     if not filtered_vacancies:
         print("Нет вакансий, соответствующих заданным критериям.")
         return
-    sorted_vacancies = sort_vacancies(filtered_vacancies)                   #соритруем вакансии
 
-    top_vacancies = get_top_vacancies(sorted_vacancies)                     #топ 5 вакансий
+    sorted_vacancies = sort_vacancies(reading_file())                                        # соритруем вакансии
+    top_vacancies = get_top_vacancies(sorted_vacancies)                                      # топ вакансий
+    json_saver.delete_vacancy(top_vacancies)                                                 # удаление вакансий
+    for vacancy in top_vacancies:                                                            # вывод информации в терминал
+        print(f""" \n 
+    {vacancy['title']}
+    Ссылка: {vacancy['url']}
+    Зарплата: {vacancy['salary']['from']} - {vacancy['salary']['to']}\n
+    """)
 
-    json_saver = JSONSaver()                                                #сохранение информации о вакансиях в файл
-    json_saver.add_vacancy(sorted_vacancies)
-    salary = int(input("Ведите минимальный уровень ЗП"))
-    json_saver.get_vacancies_by_salary(salary)
-    json_saver.delete_vacancy(top_vacancies)
+    #salary = input("Введите минимальный уровень ЗП\n")
+    #json_saver.get_vacancies_by_salary(salary)
 
-    for vacancy in top_vacancies:
-        print(vacancy)
+    #filtered_vacancies = filter_vacancies(vacancies, filter_words)
 
 
 if __name__ == "__main__":
