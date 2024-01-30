@@ -68,7 +68,3 @@ def get_top_vacancies(sorted_vacancies: list[dict]) -> list[dict]:
     :param sorted_vacancies: list[dict]    :return: list[dict]
     """
     return sorted_vacancies[::5]
-
-def gen_cont(n):
-    for r in n:
-        return r
