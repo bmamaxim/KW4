@@ -67,4 +67,4 @@ def get_top_vacancies(sorted_vacancies: list[dict]) -> list[dict]:
     Функция - срез первых 5 вакансий, топ 5 вакансий по ЗП.
     :param sorted_vacancies: list[dict]    :return: list[dict]
     """
-    return sorted_vacancies[::5]
+    return sorted_vacancies[:5]

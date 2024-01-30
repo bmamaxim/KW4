@@ -1,6 +1,6 @@
 from src.data_processing.api import HeadHunterAPI, SuperJobAPI
 from src.data_record.saver import JSONSaver, reading_file
-from src.utils import hh_inst, sj_inst, sort_vacancies, get_top_vacancies, filter_vacancies, gen_cont
+from src.utils import hh_inst, sj_inst, sort_vacancies, get_top_vacancies, filter_vacancies
 
 
 def user_interaction():
@@ -43,7 +43,7 @@ def user_interaction():
         print("Нет вакансий, соответствующих заданным критериям.")
         return
 
-    sorted_vacancies = sort_vacancies(filtered_vacancies)                                        # соритруем вакансии
+    sorted_vacancies = sort_vacancies(filtered_vacancies)                                    # соритруем вакансии
     top_vacancies = get_top_vacancies(sorted_vacancies)                                      # топ вакансий
     json_saver.delete_vacancy(top_vacancies)                                                 # удаление вакансий
     for vacancy in top_vacancies:                                                            # вывод информации в терминал
@@ -55,7 +55,6 @@ def user_interaction():
 
     #salary = input("Введите минимальный уровень ЗП\n")
     #json_saver.get_vacancies_by_salary(salary)
-
     #filtered_vacancies = filter_vacancies(vacancies, filter_words)
 
 
