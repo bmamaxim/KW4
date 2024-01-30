@@ -1,6 +1,6 @@
 from src.data_processing.api import HeadHunterAPI, SuperJobAPI
 from src.data_record.saver import JSONSaver, reading_file
-from src.utils import hh_inst, sj_inst, sort_vacancies, get_top_vacancies, filter_vacancies
+from src.utils import hh_inst, sj_inst, sort_vacancies, get_top_vacancies, filter_vacancies, gen_cont
 
 
 def user_interaction():
@@ -37,13 +37,13 @@ def user_interaction():
     json_saver.add_vacancy(vacancies[1])
 
     filter_words = input("Введите название вакансии для фильтрации: \n").split()             # фильтруем вакансии
-    filtered_vacancies = filter_vacancies(vacancies[1], filter_words)
+    filtered_vacancies = filter_vacancies(reading_file(), filter_words)
 
     if not filtered_vacancies:
         print("Нет вакансий, соответствующих заданным критериям.")
         return
 
-    sorted_vacancies = sort_vacancies(reading_file())                                        # соритруем вакансии
+    sorted_vacancies = sort_vacancies(filtered_vacancies)                                        # соритруем вакансии
     top_vacancies = get_top_vacancies(sorted_vacancies)                                      # топ вакансий
     json_saver.delete_vacancy(top_vacancies)                                                 # удаление вакансий
     for vacancy in top_vacancies:                                                            # вывод информации в терминал
